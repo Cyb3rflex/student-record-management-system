@@ -17,15 +17,42 @@ def header():
     print("=" * 60)
 
 
+# -----------------------------
+# Helper Function
+# -----------------------------
+def matric_exists(matric):
+    try:
+        with open(FILE_NAME, "r") as f:
+            for line in f:
+                if line.strip().split(",")[0] == matric:
+                    return True
+    except FileNotFoundError:
+        return False
+    return False
+
+
+# -----------------------------
+# Add Student (with duplicate check)
+# -----------------------------
 def add_student():
     clear()
     header()
     print("ADD NEW STUDENT\n")
 
-    name = input("Full Name      : ")
-    matric = input("Matric Number  : ")
-    dept = input("Department     : ")
-    level = input("Level          : ")
+    name = input("Full Name      : ").strip()
+    matric = input("Matric Number  : ").strip()
+    dept = input("Department     : ").strip()
+    level = input("Level          : ").strip()
+
+    if not name or not matric:
+        print("\n✗ Name and Matric Number are required.")
+        pause()
+        return
+
+    if matric_exists(matric):
+        print("\n✗ Error: Matric number already exists!")
+        pause()
+        return
 
     with open(FILE_NAME, "a") as f:
         f.write(f"{matric},{name},{dept},{level}\n")
@@ -34,6 +61,9 @@ def add_student():
     pause()
 
 
+# -----------------------------
+# View All Students
+# -----------------------------
 def view_students():
     clear()
     header()
@@ -43,21 +73,31 @@ def view_students():
         with open(FILE_NAME, "r") as f:
             print(f"{'Matric':<15}{'Name':<20}{'Dept':<15}{'Level':<10}")
             print("-" * 60)
+
+            empty = True
             for line in f:
                 matric, name, dept, level = line.strip().split(",")
                 print(f"{matric:<15}{name:<20}{dept:<15}{level:<10}")
+                empty = False
+
+            if empty:
+                print("No records found.")
+
     except FileNotFoundError:
         print("No records found.")
 
     pause()
 
 
+# -----------------------------
+# Search Student
+# -----------------------------
 def search_student():
     clear()
     header()
     print("SEARCH STUDENT\n")
 
-    matric_no = input("Enter Matric Number: ")
+    matric_no = input("Enter Matric Number: ").strip()
     found = False
 
     try:
@@ -74,19 +114,23 @@ def search_student():
                     break
 
         if not found:
-            print("\nStudent not found.")
+            print("\n✗ Student not found.")
+
     except FileNotFoundError:
         print("No records found.")
 
     pause()
 
 
+# -----------------------------
+# Delete Student
+# -----------------------------
 def delete_student():
     clear()
     header()
     print("DELETE STUDENT\n")
 
-    matric_no = input("Enter Matric Number: ")
+    matric_no = input("Enter Matric Number: ").strip()
     deleted = False
 
     try:
@@ -103,7 +147,7 @@ def delete_student():
         if deleted:
             print("\n✓ Record deleted successfully.")
         else:
-            print("\nStudent not found.")
+            print("\n✗ Student not found.")
 
     except FileNotFoundError:
         print("No records found.")
@@ -111,6 +155,9 @@ def delete_student():
     pause()
 
 
+# -----------------------------
+# Main Menu
+# -----------------------------
 def main():
     while True:
         clear()
@@ -122,7 +169,7 @@ def main():
         print("5. Exit")
         print("-" * 60)
 
-        choice = input("Select Option: ")
+        choice = input("Select Option: ").strip()
 
         if choice == "1":
             add_student()
@@ -136,9 +183,10 @@ def main():
             print("\nExiting system...")
             break
         else:
-            print("Invalid option.")
+            print("\nInvalid option.")
             pause()
 
 
 if __name__ == "__main__":
     main()
+
